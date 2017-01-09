@@ -1,2 +1,2 @@
 #!/bin/sh
-ln -s $1 $HOME/.`basename $1`
+ln -f -s $HOME/.dotfiles/$1 $HOME/.`basename $1`

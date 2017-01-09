@@ -2,4 +2,4 @@
 dotfiles=$HOME/.dotfiles
 
 cd $dotfiles
-find files -depth 1 -exec ./support/lndf.sh {} \;
+find files -depth 1 -not -name '.DS_Store' -exec ./support/lndf.sh {} \;

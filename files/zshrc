@@ -1,0 +1,123 @@
+
+# 文字コードの関連する設定する。
+export LANG=ja_JP.UTF-8
+#export PAGER=lv
+#export LESS='-X -i -P ?f%f:(stdin).  ?lb%lb?L/%L..  [?eEOF:?pb%pb\%..]'
+export EDITOR=vim
+
+#---------------------------------------------------------------------------------------------------
+# プロンプトの形状
+#---------------------------------------------------------------------------------------------------
+
+setopt prompt_subst
+setopt transient_rprompt
+
+case ${UID} in
+	0)
+		PROMPT="%B%{[31m%}%n@%m%{[m%}%b [%T] : %/"$'\n'"# "
+		PROMPT2="> "
+		SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
+		;;
+	*)
+		PROMPT="%B%{[36m%}%n@%m%{[m%}%b [%T] : %/"$'\n'"\$ "
+		PROMPT2="> "
+		SPROMPT="%B%{[36m%}%r is correct? [n,y,a,e]:%{[m%}%b "
+		;;
+esac 
+
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' formats '(%s)-[%b]'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b|%a]'
+precmd () {
+	psvar=()
+	LANG=en_US.UTF-8 vcs_info
+	[[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+}
+RPROMPT="%1(v|%F{green}%1v%f|)"
+# RPROMPT="[%/]"
+
+#---------------------------------------------------------------------------------------------------
+# 補完機能
+#---------------------------------------------------------------------------------------------------
+
+fpath=(~/.zshrc.d/completion $fpath)
+autoload -U compinit
+compinit -u
+setopt correct
+setopt list_packed
+setopt nolistbeep
+
+#---------------------------------------------------------------------------------------------------
+# 予測機能
+#---------------------------------------------------------------------------------------------------
+
+# じゃじゃ馬すぎる
+#autoload predict-on
+#predict-on
+
+#---------------------------------------------------------------------------------------------------
+# コマンド履歴
+#---------------------------------------------------------------------------------------------------
+
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt hist_ignore_dups     # ignore duplication command history list
+setopt share_history        # share command history data 
+
+#---------------------------------------------------------------------------------------------------
+# エイリアス
+#---------------------------------------------------------------------------------------------------
+
+if [ $HOST = "asca.project-comets.net" ]; then
+	alias ls="ls --color=tty -GvF"
+	alias chch0="ivtv-tune -d /dev/video0 -t japan-bcast -c "
+	alias chch1="ivtv-tune -d /dev/video1 -t japan-bcast -c "
+	alias viewv0="cat /dev/video0 | xine stdin://"
+	alias viewv1="cat /dev/video1 | xine stdin://"
+	alias recoverlog="sudo grep service_recover /var/log/messages"
+else
+fi
+alias l="ls"
+
+#---------------------------------------------------------------------------------------------------
+# viキーバインドを設定
+#---------------------------------------------------------------------------------------------------
+
+bindkey -v
+
+#---------------------------------------------------------------------------------------------------
+# screen のタブ表示
+#---------------------------------------------------------------------------------------------------
+
+if [ $TERM = "screen" ]; then
+	precmd () {
+		screen -X title $(basename `echo $PWD | sed -e "s/ /_/g"`)
+	}
+	preexec() {
+		screen -X title `echo $1 | cut -d " " -f 1`
+	}
+fi
+
+#---------------------------------------------------------------------------------------------------
+# ls の色を変える
+#---------------------------------------------------------------------------------------------------
+
+export LSCOLORS=gxfxcxdxbxegedabagacad
+
+#---------------------------------------------------------------------------------------------------
+# キーバインド
+#---------------------------------------------------------------------------------------------------
+
+bindkey '^p' history-beginning-search-backward
+bindkey '^n' history-beginning-search-forward
+bindkey '^R' history-incremental-pattern-search-backward
+bindkey '^S' history-incremental-pattern-search-forward
+
+#---------------------------------------------------------------------------------------------------
+# 環境ローカルのファイルを読み込み
+#---------------------------------------------------------------------------------------------------
+
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi

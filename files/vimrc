@@ -20,6 +20,7 @@ end
 set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp
 
 " É^Éuïù4
+set expandtab
 set tabstop=4
 set shiftwidth=4
 

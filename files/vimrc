@@ -1,0 +1,94 @@
+syntax on
+filetype on
+filetype indent on
+filetype plugin on
+
+set nobackup
+set hidden
+set nowrap
+set laststatus=2
+set hlsearch
+set incsearch
+
+" エンコーディング
+if has("Win32")
+"  set encoding=sjis
+  set encoding=utf-8
+else
+  set encoding=utf-8
+end
+set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp
+
+" タブ幅4
+set tabstop=4
+set shiftwidth=4
+
+" 補完オープンをCtrl+Space(Windows)、Shift-Spaceにする
+"if has('win32') 
+  imap <C-Space> <C-x><C-o>
+"else
+"  imap <S-Space> <C-x><C-o>
+"  imap <f12> <C-x><C-o>
+"end
+
+" ノーマルモードでEsc2回押すとハイライト解除
+nmap <Esc><Esc> :nohlsearch<CR>
+
+" 次の行にいったときとかにインデントあわせる
+set smartindent
+
+"Rubyのオムニ補完を設定(ft-ruby-omni)
+let g:rubycomplete_buffer_loading = 1
+let g:rubycomplete_classes_in_global = 1
+let g:rubycomplete_rails = 1
+
+" rails.vim
+let g:rails_level=4
+let g:rails_default_file="app/controllers/application.rb"
+let g:rails_default_database="postgresql"
+
+" Ruby の補完が落ちるので仕方なく
+autocmd FileType ruby :AutoComplPopDisable
+
+" fold
+set foldmethod=syntax
+let perl_fold=1
+let php_folding=1
+au Syntax php set fdm=syntax
+set foldlevel=100  "Don't autofold anything
+
+nnoremap <expr> h foldlevel(getpos('.')[1])>0 &&
+      \(getpos('.')[2]==1 \|\|
+      \getline('.')[: getpos('.')[2]-2] =~ "^[\<TAB> ]*$" )?"zch":"h"
+
+map! =f    <ESC>:call Gfunc()<CR>
+map! =fun  <ESC>:call Gfunc()<CR>
+map! =func <ESC>:call Gfunc()<CR>
+
+" Grep functions and displaies with cw
+function! Gfunc()
+    if &filetype=='php' 
+        vimgrep /^\s*\(public\|protected\|private\)\=\s*\(static\)\=\s*function\s*(*/ % | cw
+    elseif &filetype=='ruby'
+        vimgrep /^\s*def\s\=(*)*/ % | cw
+    elseif &filetype=='vim'
+        vimgrep /function!\= *\(*\)/ % | cw
+    else
+        echo "unknown filetype"
+    endif
+endfunction
+
+" Load settings for each location.
+augroup vimrc-local
+  autocmd!
+  autocmd BufNewFile,BufReadPost * call s:vimrc_local(expand('<afile>:p:h'))
+augroup END
+
+function! s:vimrc_local(loc)
+  let files = findfile('.vimrc.local', escape(a:loc, ' ') . ';', -1)
+  for i in reverse(filter(files, 'filereadable(v:val)'))
+    source `=i`
+  endfor
+endfunction
+
+set noundofile

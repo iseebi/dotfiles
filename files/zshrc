@@ -85,7 +85,7 @@ bindkey -v
 #---------------------------------------------------------------------------------------------------
 
 if [ $TERM = "screen" ]; then
-	precmd () {
+	precmd() {
 		screen -X title $(basename `echo $PWD | sed -e "s/ /_/g"`)
 	}
 	preexec() {
@@ -107,6 +107,33 @@ bindkey '^p' history-beginning-search-backward
 bindkey '^n' history-beginning-search-forward
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
+
+#---------------------------------------------------------------------------------------------------
+# 長いコマンドで音を鳴らす
+#---------------------------------------------------------------------------------------------------
+autoload -Uz add-zsh-hook
+
+if [ "$(uname)" = 'Darwin' ]; then
+  add-zsh-hook preexec long_cmd_sound_preexec
+  add-zsh-hook precmd long_cmd_sound_precmd
+fi
+
+long_cmd_sound_preexec() {
+  MY_START_TIME=`date +%s`
+}
+
+long_cmd_sound_precmd() {
+  if [ -n "$MY_START_TIME" ]; then
+    MY_END_TIME=`date +%s`
+    MY_TIME_DELTA=`expr $MY_END_TIME - $MY_START_TIME`
+    if [ $MY_TIME_DELTA -ge 20 ]; then
+      afplay /System/Library/Sounds/Glass.aiff
+    fi
+    unset MY_START_TIME
+    unset MY_END_TIME
+    unset MY_TIME_DELTA
+  fi
+}
 
 #---------------------------------------------------------------------------------------------------
 # 環境ローカルのファイルを読み込み

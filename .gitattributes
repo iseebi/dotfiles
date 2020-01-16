@@ -1,0 +1,16 @@
+files/vim/after/ftplugin/* linguist-vendored
+files/vim/after/plugin/* linguist-vendored
+files/vim/ftplugin/* linguist-vendored
+files/vim/plugin/* linguist-vendored
+
+files/vim/*/eruby.vim linguist-vendored
+files/vim/*/ruby.vim linguist-vendored
+files/vim/*/rubyunit.vim linguist-vendored
+
+files/vim/autoload/dbext.vim linguist-vendored
+files/vim/autoload/dbext_dbi.vim linguist-vendored
+files/vim/autoload/genutils.vim linguist-vendored
+files/vim/autoload/rails.vim linguist-vendored
+files/vim/autoload/rubycomplete.vim linguist-vendored
+
+

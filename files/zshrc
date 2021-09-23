@@ -127,7 +127,7 @@ long_cmd_sound_precmd() {
     MY_END_TIME=`date +%s`
     MY_TIME_DELTA=`expr $MY_END_TIME - $MY_START_TIME`
     if [ $MY_TIME_DELTA -ge 20 ]; then
-      afplay /System/Library/Sounds/Glass.aiff
+        ( afplay /System/Library/Sounds/Glass.aiff & ) > /dev/null 2>&1
     fi
     unset MY_START_TIME
     unset MY_END_TIME
@@ -143,5 +143,5 @@ long_cmd_sound_precmd() {
 
 
 #if (which zprof > /dev/null) ;then
-#  zprof | less
+#  zprof
 #fi
